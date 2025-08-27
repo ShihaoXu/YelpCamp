@@ -2,19 +2,22 @@
 <div class="row">
   <h1 class="text-center">Edit Campground</h1>
   <div class="col-6 offset-3">
-    <form action="/campgrounds/<%= campground._id %>?_method=put" method="POST">
+    <form action="/campgrounds/<%= campground._id %>?_method=put" novalidate class="validated-form" method="POST">
 
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
-        <input type="text" class="form-control" value="<%= campground.title %>" id="title" name="campground[title]">
+        <input type="text" class="form-control" value="<%= campground.title %>" id="title" name="campground[title]" required>
+        <div class="valid-feedback">Super!</div>
       </div>
       <div class="mb-3">
         <label for="location" class="form-label">Location</label>
-        <input type="text" class="form-control" value="<%= campground.location %>" id="location" name="campground[location]">
+        <input type="text" class="form-control" value="<%= campground.location %>" id="location" required name="campground[location]">
+        <div class="valid-feedback">Super!</div>
       </div>
       <div class="mb-3">
         <label for="image" class="form-label">Image URL</label>
-        <input type="text" class="form-control" value="<%= campground.image %>" id="image" name="campground[image]">
+        <input type="text" class="form-control" value="<%= campground.image %>" id="image" required name="campground[image]">
+        <div class="valid-feedback">Super!</div>
       </div>
       <div class="mb-3">
         <label for="price" class="form-label">Price</label>
@@ -22,13 +25,15 @@
           <div class="input-group-prepend">
             <span class="input-group-text">$</span>
           </div>
-          <input type="text" id="price" value="<%= campground.price %>" name="campground[price]" class="form-control" aria-label="Amount (to the nearest dollar)">
+          <input type="text" id="price" value="<%= campground.price %>" required name="campground[price]" class="form-control" aria-label="Amount (to the nearest dollar)">
+          <div class="valid-feedback">Super!</div>
         </div>
       </div>
 
       <div class="mb-3">
         <label for="description" class="form-label">Description</label>
-        <textarea class="form-control" id="description" name="campground[description]"><%= campground.description %></textarea>
+        <textarea class="form-control" id="description" name="campground[description]" required><%= campground.description %></textarea>
+        <div class="valid-feedback">Super!</div>
       </div>
       <div class="mb-3"><button class="btn btn-info">Update Campground</button></div>
     </form>
