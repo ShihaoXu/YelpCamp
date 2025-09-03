@@ -4,7 +4,7 @@ const cities = require('./cities')
 const { places, descriptors } = require('./seedHelpers');
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
-    .catch(error => console.error("Initial connection to yelp-camp failed."));
+    .catch(error => console.error("Initial connection to yelp-camp failed: ", error));
 
 const db = mongoose.connection; // short name
 db.on("error", err => console.error(err)); // Handel errors after initial connection was established.
