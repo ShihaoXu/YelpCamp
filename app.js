@@ -6,6 +6,8 @@ const ejsMate = require('ejs-mate');
 const ExpressError = require('./utils/ExpressError');
 const campgroundsRouter = require('./routes/campgrounds');
 const reviewsRouter = require('./routes/reviews');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
     .catch(error => console.error("Initial connection to yelp-camp failed: ", error));
@@ -22,13 +24,35 @@ app.engine('ejs', ejsMate); // Use ejsMate for layout support
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride('_method'))
+const sessionConfig = {
+    secret: 'thisshouldbeabettersecret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // One week from now
+        httpOnly: true, // Cookie cannot be accessed through client-side script
+    }
+}
 
-// Routes
+app.use(session(sessionConfig));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(flash()); // flash middleware must come after session middleware
+app.use(methodOverride('_method'))
+app.use((req, res, next) => {
+    // console.log("req.session: ", req.session);
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/campgrounds', campgroundsRouter);
 app.use('/campgrounds/:id/reviews', reviewsRouter);
+
+
+
 
 app.get('/', (req, res) => {
     res.render('home');
