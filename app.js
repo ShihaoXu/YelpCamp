@@ -8,6 +8,10 @@ const campgroundsRouter = require('./routes/campgrounds');
 const reviewsRouter = require('./routes/reviews');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
+const userRouter = require('./routes/users');
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
     .catch(error => console.error("Initial connection to yelp-camp failed: ", error));
@@ -38,9 +42,17 @@ app.use(session(sessionConfig));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(flash()); // flash middleware must come after session middleware
+
+app.use(passport.initialize());
+app.use(passport.session()); // Must come after session middleware
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use(methodOverride('_method'))
 app.use((req, res, next) => {
-    // console.log("req.session: ", req.session);
+    console.log("req.session: ", req.session);
+    res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
@@ -50,7 +62,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/campgrounds', campgroundsRouter);
 app.use('/campgrounds/:id/reviews', reviewsRouter);
-
+app.use('/', userRouter);
 
 
 
