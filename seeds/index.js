@@ -21,15 +21,21 @@ const seedDB = async () => {
             author: '68b9e82d3e9008c1f8213efd',
             title: `${sample(descriptors)} ${sample(places)}`,
             location: `${cities[random1000].city} ${cities[random1000].state}`,
-            image: `https://picsum.photos/400?random=${Math.random()}`,
+            images: [
+                {
+                    url: 'https://res.cloudinary.com/djiuhsdmb/image/upload/v1757597973/YelpCamp/yshoj8gfhekya8joewu7.png',
+                    filename: 'YelpCamp/yshoj8gfhekya8joewu7',
+                },
+                {
+                    url: 'https://res.cloudinary.com/djiuhsdmb/image/upload/v1757597975/YelpCamp/qh4llxt0n572rgeqqnvr.png',
+                    filename: 'YelpCamp/qh4llxt0n572rgeqqnvr',
+                }
+            ],
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.',
             price: Math.floor(Math.random() * 20) + 10,
         })
         await camp.save();
     }
-
-    const c = new Campground({ title: 'purple field' });
-    await c.save();
 }
 
 seedDB().then(() => mongoose.connection.close()); // Close MongoDB connection

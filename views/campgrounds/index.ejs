@@ -3,12 +3,16 @@
 <div>
   <a href="/campgrounds/new">Add Campground</a>
 </div>
-<% for (let campground of campgrounds) { %>
 
-<div class="card" mb-3>
+<% for (let campground of campgrounds) { %>
+<div class="card mb-3">
   <div class="row">
     <div class="col-md-4">
-      <img class="img-fluid" alt="" src="<%= campground.image %>">
+      <% if (campground.images && campground.images.length) { %>
+      <img class="img-fluid" src="<%= campground.images[0].url %>" alt="<%= campground.title %>">
+      <% } else { %>
+      <img class="img-fluid" src="https://res.cloudinary.com/your-cloud-name/image/upload/v1642838321/YelpCamp/placeholder-image.jpg" alt="No image available for this campground.">
+      <% } %>
     </div>
     <div class="col-md-8">
       <div class="card-body">
@@ -24,7 +28,4 @@
     </div>
   </div>
 </div>
-
-
-
 <% } %>

@@ -15,8 +15,17 @@ const isLoggedIn = (req, res, next) => {
 }
 
 const validateCampground = (req, res, next) => {
-    const { error } = campgroundSchema.validate(req.body);
-    if (error) {
+    if (req.body === undefined) {
+        throw new ExpressError("req.body is undefined.", 500);
+    }
+    // campground.images = req.files.map(f => ({url: f.path, filename: f.filename}));
+    // console.log(campground);
+
+    const { value, error } = campgroundSchema.validate(req.body, { presence: "required" });
+    if (value === undefined) {
+        throw new ExpressError("req.body is undefined.")
+    } else if (error) {
+        console.log(value);
         const msg = error.details.map(el => el.message).join(',');
         throw new ExpressError(msg, 400);
     }

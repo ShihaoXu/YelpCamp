@@ -1,4 +1,5 @@
-const Campground = require('../models/campground')
+const Campground = require('../models/campground');
+const { cloudinary } = require('../cloudinary');
 
 async function index(req, res) {
     const campgrounds = await Campground.find({});
@@ -11,8 +12,10 @@ function renderNewForm(req, res) {
 
 async function create(req, res) {
     const campground = new Campground(req.body.campground);
+    campground.images = req.files.map(f => ({url: f.path, filename: f.filename}));
     campground.author = req.user._id; // req.user is added by passport
     await campground.save();
+    // console.log(campground);
     req.flash('success', 'Successfully made a new campground!');
     res.redirect(`/campgrounds/${campground._id}`);
 }
@@ -24,7 +27,7 @@ async function show(req, res) {
         path: 'reviews',
         populate: { path: 'author' }
     }).populate('author'); // it's the `author` field in campgroundSchema
-    console.log(campground);
+    // console.log(campground);
     if (!campground) {
         req.flash('error', 'Cannot find that campground!');
         return res.redirect('/campgrounds'); // TODO: why return?
@@ -44,12 +47,24 @@ async function renderEditForm(req, res) {
 
 async function update(req, res) {
     const { id } = req.params;
+    // console.log("checkbox:");
+    // console.log(req.body);
     const campground = await Campground.findById(id);
     if (!campground.author.equals(req.user._id)) {
         req.flash('error', "You do not have permission to do that!");
         return res.redirect(`/campgrounds/${id}`);
     }
-    await Campground.findByIdAndUpdate(id, req.body.campground);
+    campground.images.push(...req.files.map(f => ({url: f.path, filename: f.filename})));
+    await Campground.findByIdAndUpdate(id, campground);
+
+    if (req.body.deleteImages) {
+        for (const filename of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(filename);
+        }
+        await campground.updateOne({$pull: {images: {filename: {$in: req.body.deleteImages}}}});
+        console.log(campground);
+    }
+
     req.flash('success', 'Successfully updated campground!');
     res.redirect(`/campgrounds/${id}`);
 }

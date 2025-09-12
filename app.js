@@ -1,3 +1,11 @@
+if (process.env.NODE_ENV !== "production") {
+    require('dotenv').config(); // takes the key-value pairs and add into process.env
+    console.log("Some process.env properties:");
+    const cloudinaryKeys = ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_SECRET"];
+    cloudinaryKeys.forEach((v) => {console.log(`- ${v}: ${process.env[`${v}`]}`)});
+    console.log();
+}
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -12,6 +20,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const userRouter = require('./routes/users');
+
+
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
     .catch(error => console.error("Initial connection to yelp-camp failed: ", error));
@@ -51,7 +61,7 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(methodOverride('_method'))
 app.use((req, res, next) => {
-    console.log("req.session: ", req.session);
+    // console.log("req.session: ", req.session);
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
@@ -59,6 +69,11 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((req, _res, next) => {
+    console.log("Requested URL:", req.method, req.originalUrl);
+    next();
+})
 
 app.use('/campgrounds', campgroundsRouter);
 app.use('/campgrounds/:id/reviews', reviewsRouter);
@@ -75,6 +90,8 @@ app.all(/(.*)/, (req, res, next) => {
 })
 
 app.use((err, req, res, _next) => {
+    console.log("=== In generic error handler: ===")
+    console.log("Error:", err);
     const { statusCode = 500 } = err;
     if (!err.message) err.message = 'Oh no, something went wrong!';
     res.status(statusCode).render('error', { err });
