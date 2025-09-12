@@ -33,6 +33,10 @@ const seedDB = async () => {
             ],
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.',
             price: Math.floor(Math.random() * 20) + 10,
+            geometry: {
+                type: "Point",
+                coordinates: [5, 5]
+            }
         })
         await camp.save();
     }
