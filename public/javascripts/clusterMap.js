@@ -1,6 +1,6 @@
 mapboxgl.accessToken = mapboxToken;
 const map = new mapboxgl.Map({
-    container: 'map',
+    container: 'cluster-map',
     // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
     style: 'mapbox://styles/mapbox/light-v11',
     config: {
@@ -12,6 +12,10 @@ const map = new mapboxgl.Map({
     center: [-103.5917, 40.6699],
     zoom: 3
 });
+
+// Add zoom and rotation controls to the map.
+// REF: https://docs.mapbox.com/mapbox-gl-js/example/navigation/
+map.addControl(new mapboxgl.NavigationControl());
 
 map.on('load', () => {
     // Add a new source from our GeoJSON data and
