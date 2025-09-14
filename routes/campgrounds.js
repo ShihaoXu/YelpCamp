@@ -8,7 +8,13 @@ const { storage } = require('../cloudinary/index');
 const upload = multer({ storage }); // a local folder will accomodate the uploaded files
 
 router.route('/')
-    .get(catchAsync(campgroundsController.index))
+    .get((req, res, next) => {
+        // console.log("in route /: ")
+        // console.log("Querying req 3:");
+        // console.log("req.params:", req.params, "req.query:", req.query, "\n");
+        next();
+    },
+        catchAsync(campgroundsController.index))
     .post(isLoggedIn,
         upload.array('image'), // this needs to go before validateCampground because it populates req.body req.files
         // TODO: remove uploaded images if validation fails
